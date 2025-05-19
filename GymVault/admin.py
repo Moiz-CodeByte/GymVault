@@ -4,8 +4,8 @@ from .models import User, Gym, GymAdmin, MembershipPlan, Member, Payment, Locker
 # Register your models here.
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'is_staff', 'is_active')
-    list_filter = ('is_staff', 'is_active')
+    list_display = ('username', 'email', 'is_staff')
+    list_filter = ('is_staff',)
     search_fields = ('username', 'email')
 
 
@@ -21,8 +21,8 @@ class MembershipPlanAdmin(admin.ModelAdmin):
     search_fields = ('name', 'gym__name')
 
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ('user', 'gym', 'membership_plan', 'start_date', 'end_date', 'is_active')
-    list_filter = ('gym', 'is_active', 'membership_plan')
+    list_display = ('user', 'gym', 'membership_plan', )
+    list_filter = ('gym', 'membership_plan')
     search_fields = ('user__username', 'user__email', 'gym__name')   
    
 

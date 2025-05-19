@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-4">Welcome to the Dashboard</h1>
+    <p class="mb-4">This is your personal dashboard where you can manage your account and view your membership details.</p>
+
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-lg font-medium mb-4">Membership Information</h2>
+        <p class="mb-2">Membership Type: {{ membership.membership_type }}</p>
+        <p class="mb-2">Start Date: {{ membership.start_date }}</p> 
+        <p class="mb-2">End Date: {{ membership.end_date }}</p>
+        <p class="mb-2">Status: {{ membership.status }}</p>
+        <p class="mb-2">Total Visits: {{ membership.total_visits }}</p>
+        <p class="mb-2">Remaining Visits: {{ membership.remaining_visits }}</p>
+        <p class="mb-2">Total Amount: {{ membership.total_amount }}</p>
+        <p class="mb-2">Remaining Amount: {{ membership.remaining_amount }}</p>
+        <p class="mb-2">Payment Status: {{ membership.payment_status }}</p>
+        <p class="mb-2">Payment Date: {{ membership.payment_date }}</p>
+        <p class="mb-2">Payment Method: {{ membership.payment_method }}</p>
+        <p class="mb-2">Payment Reference: {{ membership.payment_reference }}</p>
+        <p class="mb-2">Payment Amount: {{ membership.payment_amount }}</p>
+        <p class="mb-2">Payment Status: {{ membership.payment_status }}</p> 
+        <p class="mb-2">Payment Date: {{ membership.payment_date }}</p>
+        <p class="mb-2">Payment Method: {{ membership.payment_method }}</p>
+        <p class="mb-2">Payment Reference: {{ membership.payment_reference }}</p>
+        <p class="mb-2">Payment Amount: {{ membership.payment_amount }}</p>
+        <p class="mb-2">Payment Status: {{ membership.payment_status }}</p> 
+        <p class="mb-2">Payment Date: {{ membership.payment_date }}</p>
+
+
+
+        
+        
+
+
+</div>
+
+{% endblock %}
