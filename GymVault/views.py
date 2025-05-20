@@ -12,8 +12,11 @@ def home(request):
     return render(request, 'home.html')
 
 def login(request):
-    # if request.user.is_authenticated:
-    #     return redirect('home')
+    if request.user.is_authenticated:
+        if request.user.role == 'superadmin':
+            return redirect('admin:index')
+        return redirect('dashboard')
+ 
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -21,7 +24,10 @@ def login(request):
         if user is not None:
             auth_login(request, user)
             messages.success(request, f'Welcome back, {username}!')
-            return redirect('home')
+            if user.role == 'superadmin':
+                return redirect('admin:index')
+            return redirect('dashboard')
+        
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'login.html')
@@ -59,16 +65,24 @@ def register(request):
         user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name,  email=email, password=password, role='member')
         if user is not None:
             auth_login(request, user)
-            #messages.success(request, f'Welcome to GymVault, {username}!')
-            return redirect('home')
+            messages.success(request, f'Welcome to GymVault, {username}!')
+            return redirect('dashboard')
     return render(request, 'register.html', context)
 
 def logout(request):
     auth_logout(request)
     return redirect('home')
 
-def member_dashboard(request):
-    return render(request, 'member_dashboard.html')
+def dashboard(request):
+    if request.user.role == 'member':
+        return render(request, 'member_dashboard.html')
+    if request.user.role == 'gymadmin':
+        return render(request, 'gymadmin_dashboard.html')
+    elif request.user.role == 'superadmin':
+       return redirect('admin/')
+    else:
+        return redirect('login')
+
 
 
 # def get_all_gym(request):
