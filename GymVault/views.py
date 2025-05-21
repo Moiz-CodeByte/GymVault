@@ -584,6 +584,9 @@ def delete_membership_plan(request, plan_id):
         
     return redirect('dashboard')
 
+def about(request):
+    return render(request, 'about.html')
+
 # def get_all_gym(request):
 
 
