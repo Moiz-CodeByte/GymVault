@@ -246,6 +246,14 @@ def member_detail(request, member_id):
         # Get member's payment history
         payments = Payment.objects.filter(member=member).order_by('-payment_date')
         
+        # Calculate expiry date
+        if member.start_date and member.membership_plan:
+            member.expiry_date = member.start_date + timedelta(days=member.membership_plan.duration_in_days)
+            member.is_expired = member.expiry_date < datetime.now().date()
+            if member.is_expired:
+                member.is_active = False
+                member.save()
+        
         context = {
             'member': member,
             'payments': payments,
