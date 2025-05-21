@@ -216,6 +216,7 @@ def dashboard(request):
             available_lockers = lockers.filter(is_available=True).count()
             
             context = {
+                'gym': gym,  # Add gym to context
                 'members': members,
                 'lockers': lockers,
                 'membership_plans': membership_plans,
@@ -509,6 +510,79 @@ def update_payment_status(request, payment_id):
             messages.error(request, 'Payment not found.')
             
     return redirect('member_detail', member_id=payment.member.id)
+
+@login_required
+def add_membership_plan(request):
+    if request.user.role != 'gymadmin':
+        return redirect('dashboard')
+        
+    if request.method == 'POST':
+        try:
+            gym_admin = GymAdmin.objects.get(user=request.user)
+            name = request.POST.get('name')
+            price = request.POST.get('price')
+            duration_in_days = request.POST.get('duration_in_days')
+            
+            MembershipPlan.objects.create(
+                gym=gym_admin.gym,
+                name=name,
+                price=price,
+                duration_in_days=duration_in_days
+            )
+            
+            messages.success(request, 'Membership plan added successfully.')
+        except GymAdmin.DoesNotExist:
+            messages.error(request, 'Gym admin profile not found.')
+        except Exception as e:
+            messages.error(request, f'Error adding membership plan: {str(e)}')
+            
+    return redirect('dashboard')
+
+@login_required
+def update_membership_plan(request, plan_id):
+    if request.user.role != 'gymadmin':
+        return redirect('dashboard')
+        
+    if request.method == 'POST':
+        try:
+            gym_admin = GymAdmin.objects.get(user=request.user)
+            plan = MembershipPlan.objects.get(id=plan_id, gym=gym_admin.gym)
+            
+            plan.name = request.POST.get('name')
+            plan.price = request.POST.get('price')
+            plan.duration_in_days = request.POST.get('duration_in_days')
+            plan.save()
+            
+            messages.success(request, 'Membership plan updated successfully.')
+        except (GymAdmin.DoesNotExist, MembershipPlan.DoesNotExist):
+            messages.error(request, 'Plan not found.')
+        except Exception as e:
+            messages.error(request, f'Error updating membership plan: {str(e)}')
+            
+    return redirect('dashboard')
+
+@login_required
+def delete_membership_plan(request, plan_id):
+    if request.user.role != 'gymadmin':
+        return redirect('dashboard')
+        
+    try:
+        gym_admin = GymAdmin.objects.get(user=request.user)
+        plan = MembershipPlan.objects.get(id=plan_id, gym=gym_admin.gym)
+        
+        # Check if plan is in use
+        if Member.objects.filter(membership_plan=plan).exists():
+            messages.error(request, 'Cannot delete plan that is currently in use.')
+            return redirect('dashboard')
+            
+        plan.delete()
+        messages.success(request, 'Membership plan deleted successfully.')
+    except (GymAdmin.DoesNotExist, MembershipPlan.DoesNotExist):
+        messages.error(request, 'Plan not found.')
+    except Exception as e:
+        messages.error(request, f'Error deleting membership plan: {str(e)}')
+        
+    return redirect('dashboard')
 
 # def get_all_gym(request):
 

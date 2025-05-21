@@ -24,4 +24,9 @@ urlpatterns = [
     path('gymadmin/locker/<int:locker_id>/delete/', views.delete_locker, name='delete_locker'),
     path('gymadmin/locker/add/', views.add_locker, name='add_locker'),
     path('gymadmin/payment/<int:payment_id>/update-status/', views.update_payment_status, name='update_payment_status'),
+    
+    # Membership Plan Management
+    path('gymadmin/plan/add/', views.add_membership_plan, name='add_membership_plan'),
+    path('gymadmin/plan/<int:plan_id>/update/', views.update_membership_plan, name='update_membership_plan'),
+    path('gymadmin/plan/<int:plan_id>/delete/', views.delete_membership_plan, name='delete_membership_plan'),
 ]
