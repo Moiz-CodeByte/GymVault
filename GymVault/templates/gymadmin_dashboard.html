@@ -1,17 +1,378 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Messages -->
+    {% if messages %}
+    <div class="mb-6">
+        {% for message in messages %}
+        <div class="p-4 mb-4 rounded-md {% if message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-<div class="container mx-auto px-4 py-8">   
-    <h1 class="text-2xl font-bold mb-4">Welcome to the Gym Admin Dashboard</h1>
-    <p class="mb-4">This is your personal dashboard where you can manage your account and view your membership details.</p>
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Gym Admin Dashboard</h1>
+        <div class="text-sm text-gray-600">
+            Welcome, {{ request.user.first_name }} {{ request.user.last_name }}
+        </div>
+    </div>
 
-    <div class="bg-white shadow-md rounded-lg p-6">
-        <h2 class="text-lg font-medium mb-4">Membership Information</h2>
-        <p class="mb-2">Membership Type: {{ membership.membership_type }}</p>
-        <p class="mb-2">Start Date: {{ membership.start_date }}</p>
-        <p class="mb-2">End Date: {{ membership.end_date }}</p>
-    </div>  
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-2">Total Members</h3>
+            <p class="text-3xl font-bold text-indigo-600">{{ total_members }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-2">Active Memberships</h3>
+            <p class="text-3xl font-bold text-green-600">{{ active_memberships }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-2">Available Lockers</h3>
+            <p class="text-3xl font-bold text-blue-600">{{ available_lockers }}</p>
+        </div>
+    </div>
+
+    <!-- Members Section -->
+    <div class="bg-white rounded-lg shadow mb-8">
+        <div class="p-6 border-b">
+            <h2 class="text-xl font-semibold">Members</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership Plan</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for member in members %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">{{ member.user.get_full_name }}</div>
+                            <div class="text-sm text-gray-500">{{ member.user.email }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ member.membership_plan.name }}</div>
+                            <div class="text-sm text-gray-500">${{ member.membership_plan.price }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ member.start_date }}</div>
+                            <div class="text-sm text-gray-500">Expires: {{ member.expiry_date }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% with latest_payment=member.payment_set.last %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                {% if latest_payment.status == 'paid' %}bg-green-100 text-green-800
+                                {% elif latest_payment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                {% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ latest_payment.get_status_display|default:"No Payment" }}
+                            </span>
+                            {% endwith %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <a href="{% url 'member_detail' member.id %}" class="text-indigo-600 hover:text-indigo-900 mr-3">View Details</a>
+                            <button onclick="showRenewModal('{{ member.id }}')" class="text-green-600 hover:text-green-900 mr-3">Renew</button>
+                            <button onclick="showUpdateModal('{{ member.id }}')" class="text-blue-600 hover:text-blue-900 mr-3">Update</button>
+                            <button onclick="showDeleteModal('{{ member.id }}')" class="text-red-600 hover:text-red-900">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Lockers Section -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="p-6 border-b flex justify-between items-center">
+            <h2 class="text-xl font-semibold">Locker Management</h2>
+            <button onclick="showAddLockerModal()" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                Add New Locker
+            </button>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Locker Number</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for locker in lockers %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {{ locker.locker_number }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if not locker.assigned_member %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ locker.is_available|yesno:"Available,Occupied" }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {% if locker.assigned_member %}
+                                {{ locker.assigned_member.user.get_full_name }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            {% if not locker.assigned_member %}
+                                <button onclick="showAssignModal('{{ locker.id }}')" class="text-indigo-600 hover:text-indigo-900 mr-3">Assign</button>
+                            {% else %}
+                                <a href="{% url 'unassign_locker' locker.id %}" class="text-red-600 hover:text-red-900 mr-3" onclick="return confirm('Are you sure you want to unassign this locker?')">Unassign</a>
+                            {% endif %}
+                            <button onclick="showUpdateLockerModal('{{ locker.id }}')" class="text-blue-600 hover:text-blue-900 mr-3">Update</button>
+                            <button onclick="showDeleteLockerModal('{{ locker.id }}')" class="text-red-600 hover:text-red-900">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+<!-- Assign Locker Modal -->
+<div id="assignModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Assign Locker</h3>
+            <form action="" method="POST" id="assignForm">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="member_id">
+                        Select Member
+                    </label>
+                    <select name="member_id" id="member_id" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">Select a member</option>
+                        {% for member in members %}
+                            {% if member.is_active %}
+                                <option value="{{ member.id }}">{{ member.user.get_full_name }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="hideAssignModal()"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        Assign
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Locker Modal -->
+<div id="addLockerModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Add New Locker</h3>
+            <form action="{% url 'add_locker' %}" method="POST" id="addLockerForm">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="locker_number">
+                        Locker Number
+                    </label>
+                    <input type="text" name="locker_number" id="locker_number" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="hideAddLockerModal()"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        Add
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Update Locker Modal -->
+<div id="updateLockerModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Update Locker</h3>
+            <form action="" method="POST" id="updateLockerForm">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="update_locker_number">
+                        Locker Number
+                    </label>
+                    <input type="text" name="locker_number" id="update_locker_number" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="hideUpdateLockerModal()"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Update Membership Modal -->
+<div id="updateModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Update Membership</h3>
+            <form action="" method="POST" id="updateForm">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="update_plan">
+                        Select Plan
+                    </label>
+                    <select name="membership_plan" id="update_plan" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        {% for plan in membership_plans %}
+                            <option value="{{ plan.id }}">{{ plan.name }} - ${{ plan.price }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="hideUpdateModal()"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Renew Membership Modal -->
+<div id="renewModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Renew Membership</h3>
+            <form action="" method="POST" id="renewForm">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="renew_plan">
+                        Select Plan
+                    </label>
+                    <select name="membership_plan" id="renew_plan" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        {% for plan in membership_plans %}
+                            <option value="{{ plan.id }}">{{ plan.name }} - ${{ plan.price }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="hideRenewModal()"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        Renew
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showAssignModal(lockerId) {
+        const modal = document.getElementById('assignModal');
+        const form = document.getElementById('assignForm');
+        form.action = `/gymadmin/locker/${lockerId}/assign/`;
+        modal.classList.remove('hidden');
+    }
+
+    function hideAssignModal() {
+        const modal = document.getElementById('assignModal');
+        modal.classList.add('hidden');
+    }
+
+    function showAddLockerModal() {
+        const modal = document.getElementById('addLockerModal');
+        modal.classList.remove('hidden');
+    }
+
+    function hideAddLockerModal() {
+        const modal = document.getElementById('addLockerModal');
+        modal.classList.add('hidden');
+    }
+
+    function showUpdateLockerModal(lockerId) {
+        const modal = document.getElementById('updateLockerModal');
+        const form = document.getElementById('updateLockerForm');
+        form.action = `/gymadmin/locker/${lockerId}/update/`;
+        modal.classList.remove('hidden');
+    }
+
+    function hideUpdateLockerModal() {
+        const modal = document.getElementById('updateLockerModal');
+        modal.classList.add('hidden');
+    }
+
+    function showRenewModal(memberId) {
+        const modal = document.getElementById('renewModal');
+        const form = document.getElementById('renewForm');
+        form.action = `/gymadmin/member/${memberId}/renew/`;
+        modal.classList.remove('hidden');
+    }
+
+    function hideRenewModal() {
+        const modal = document.getElementById('renewModal');
+        modal.classList.add('hidden');
+    }
+
+    function showUpdateModal(memberId) {
+        const modal = document.getElementById('updateModal');
+        const form = document.getElementById('updateForm');
+        form.action = `/gymadmin/member/${memberId}/update/`;
+        modal.classList.remove('hidden');
+    }
+
+    function hideUpdateModal() {
+        const modal = document.getElementById('updateModal');
+        modal.classList.add('hidden');
+    }
+
+    function showDeleteModal(memberId) {
+        if (confirm('Are you sure you want to delete this membership?')) {
+            window.location.href = `/gymadmin/member/${memberId}/delete/`;
+        }
+    }
+
+    function showDeleteLockerModal(lockerId) {
+        if (confirm('Are you sure you want to delete this locker?')) {
+            window.location.href = `/gymadmin/locker/${lockerId}/delete/`;
+        }
+    }
+</script>
 {% endblock %}
 
