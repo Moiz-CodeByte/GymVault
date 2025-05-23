@@ -30,4 +30,5 @@ urlpatterns = [
     path('gymadmin/plan/add/', views.add_membership_plan, name='add_membership_plan'),
     path('gymadmin/plan/<int:plan_id>/update/', views.update_membership_plan, name='update_membership_plan'),
     path('gymadmin/plan/<int:plan_id>/delete/', views.delete_membership_plan, name='delete_membership_plan'),
+    path('gyms-and-plans/', views.gyms_and_plans, name='gyms_and_plans'),
 ]

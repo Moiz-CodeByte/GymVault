@@ -587,6 +587,13 @@ def delete_membership_plan(request, plan_id):
 def about(request):
     return render(request, 'about.html')
 
+def gyms_and_plans(request):
+    gyms = Gym.objects.all()
+    # Get membership plans for each gym
+    for gym in gyms:
+        gym.plans = MembershipPlan.objects.filter(gym=gym)
+    return render(request, 'gyms_and_plans.html', {'gyms': gyms})
+
 # def get_all_gym(request):
 
 
