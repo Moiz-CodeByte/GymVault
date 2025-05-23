@@ -1,33 +1,28 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %} Select Gym & Plan | Gym Vault {% endblock title %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100 text-gray-900 flex justify-center py-12">
-    <div class="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex justify-center py-12">
+    <div class="max-w-screen-xl m-0 sm:m-10 bg-white shadow dark:bg-gray-800 sm:rounded-lg flex justify-center flex-1">
         <div class="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
-            <div>
-                <img src="https://storage.googleapis.com/devitary-image-host.appspot.com/15846435184459982716-LogoMakr_7POjrN.png"
-                    class="w-32 mx-auto" />
-            </div>
             <div class="mt-12 flex flex-col items-center">
                 <h1 class="text-2xl xl:text-3xl font-extrabold">
                     Complete Your Registration
                 </h1>
 
-                
-
                 <div class="w-full flex-1 mt-8">
                     <div class="mx-auto max-w-xs">
                         <form action="{% url 'complete_registration' %}" method="post" id="gymPlanForm">
                             {% csrf_token %}
-                            
+
                             <!-- Gym Selection -->
                             <div class="mb-6">
-                                <label class="block text-gray-700 text-sm font-bold mb-2" for="gym">
+                                <label class="block text-gray-700 text-sm font-bold mb-2 dark:text-white" for="gym">
                                     Select Gym
                                 </label>
                                 <select name="gym" id="gym" required
-                                    class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white">
+                                    class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 placeholder-gray-500 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-gray-400 focus:bg-white dark:focus:bg-gray-800">
                                     <option value="">Select a gym</option>
                                     {% for gym in gyms %}
                                         <option value="{{ gym.id }}">{{ gym.name }}</option>
@@ -37,42 +32,44 @@
 
                             <!-- Membership Plan Selection -->
                             <div class="mb-6">
-                                <label class="block text-gray-700 text-sm font-bold mb-2" for="membership_plan">
+                                <label class="block text-gray-700 text-sm font-bold mb-2 dark:text-white" for="membership_plan">
                                     Select Membership Plan
                                 </label>
                                 <select name="membership_plan" id="membership_plan" required
-                                    class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white">
+                                    class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 placeholder-gray-500 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-gray-400 focus:bg-white dark:focus:bg-gray-800">
                                     <option value="">Select a plan</option>
                                 </select>
                             </div>
 
-                            <!-- Contact Information -->
+                            <!-- Phone -->
                             <div class="mb-6">
-                                <label class="block text-gray-700 text-sm font-bold mb-2" for="phone">
+                                <label class="block text-gray-700 text-sm font-bold mb-2 dark:text-white" for="phone">
                                     Phone Number
                                 </label>
                                 <input type="tel" name="phone" id="phone" required
-                                    class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+                                    class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 placeholder-gray-500 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-gray-400 focus:bg-white dark:focus:bg-gray-800"
                                     placeholder="Enter your phone number">
                             </div>
 
+                            <!-- Address -->
                             <div class="mb-6">
-                                <label class="block text-gray-700 text-sm font-bold mb-2" for="address">
+                                <label class="block text-gray-700 text-sm font-bold mb-2 dark:text-white" for="address">
                                     Address
                                 </label>
                                 <textarea name="address" id="address" required rows="3"
-                                    class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
+                                    class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 placeholder-gray-500 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-gray-400 focus:bg-white dark:focus:bg-gray-800"
                                     placeholder="Enter your address"></textarea>
                             </div>
 
                             <!-- Plan Summary -->
-                            <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                                <h3 class="font-semibold mb-2">Plan Summary</h3>
-                                <div id="planSummary" class="text-sm text-gray-600">
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-6">
+                                <h3 class="font-semibold mb-2 text-gray-900 dark:text-gray-100">Plan Summary</h3>
+                                <div id="planSummary" class="text-sm text-gray-600 dark:text-gray-300">
                                     Select a gym and plan to see details
                                 </div>
                             </div>
 
+                            <!-- Submit Button -->
                             <button type="submit"
                                 class="mt-5 tracking-wide font-semibold bg-indigo-500 text-gray-100 w-full py-4 rounded-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
                                 <svg class="w-6 h-6 -ml-2" fill="none" stroke="currentColor" stroke-width="2"
@@ -90,16 +87,17 @@
                 </div>
             </div>
         </div>
-        <div class="flex-1 bg-indigo-100 text-center hidden lg:flex">
+
+        <!-- Right Side Illustration -->
+        <div class="flex-1 bg-indigo-100 dark:bg-indigo-900 text-center hidden lg:flex">
             <div class="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
-                style="background-image: url('https://storage.googleapis.com/devitary-image-host.appspot.com/15848031292911696601-undraw_designer_life_w96d.svg');">
+                style="background-image: url('{% static 'images/register-2.svg' %}');">
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Pre-render plans data
     const plans = [
         {% for plan in membership_plans %}
         {
@@ -112,25 +110,22 @@
         {% endfor %}
     ];
 
-    document.getElementById('gym').addEventListener('change', function() {
+    document.getElementById('gym').addEventListener('change', function () {
         const gymId = this.value;
         const planSelect = document.getElementById('membership_plan');
-        
-        // Clear current options
         planSelect.innerHTML = '<option value="">Select a plan</option>';
-        
-        // Filter plans for selected gym
+
         plans.forEach(plan => {
             if (plan.gym_id === gymId) {
                 const option = document.createElement('option');
                 option.value = plan.id;
-                option.textContent = `${plan.name} - $${plan.price} (${plan.duration} days)`;
+                option.textContent = `${plan.name} - Rs.${plan.price} (${plan.duration} days)`;
                 option.dataset.price = plan.price;
                 option.dataset.duration = plan.duration;
                 planSelect.appendChild(option);
             }
         });
-        
+
         updatePlanSummary();
     });
 
@@ -140,18 +135,18 @@
         const planSelect = document.getElementById('membership_plan');
         const selectedOption = planSelect.options[planSelect.selectedIndex];
         const summaryDiv = document.getElementById('planSummary');
-        
+
         if (selectedOption.value) {
             const price = selectedOption.dataset.price;
             const duration = selectedOption.dataset.duration;
             summaryDiv.innerHTML = `
                 <p>Plan: ${selectedOption.text}</p>
                 <p>Duration: ${duration} days</p>
-                <p>Total Amount: $${price}</p>
+                <p>Total Amount: Rs ${price}</p>
             `;
         } else {
             summaryDiv.innerHTML = 'Select a gym and plan to see details';
         }
     }
 </script>
-{% endblock content %} 
+{% endblock content %}
