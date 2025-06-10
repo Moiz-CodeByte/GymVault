@@ -164,6 +164,10 @@ def dashboard(request):
         return redirect('login')
         
     if request.user.role == 'member':
+        if request.user.phone is None or request.user.phone == '':
+            return redirect('select_gym_plan')
+        
+        
         # Get all memberships for the user
         memberships = Member.objects.filter(user=request.user)
         
@@ -185,6 +189,8 @@ def dashboard(request):
             'locker': locker,
         }
         return render(request, 'member_dashboard.html', context)
+   
+        
         
     elif request.user.role == 'gymadmin':
         # Get the gym admin's gym
