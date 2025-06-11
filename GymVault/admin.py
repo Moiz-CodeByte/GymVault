@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import User, Gym, GymAdmin, MembershipPlan, Member, Payment, Locker
+from .models import User, Gym, GymAdmin, MembershipPlan, Member, Payment, Locker, RequestForm
 # Register your models here.
 
 class UserAdmin(admin.ModelAdmin):
@@ -39,6 +39,7 @@ admin.site.register(MembershipPlan, MembershipPlanAdmin)
 admin.site.register(Member, MemberAdmin)
 admin.site.register(Payment)
 admin.site.register(Locker, LockerAdmin)
+admin.site.register(RequestForm)
 
 
 

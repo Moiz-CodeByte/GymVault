@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'gymvault',
     
-    # Add these apps for django-allauth
+    # apps for django-allauth
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -54,7 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',  # Required for django-allauth
+    'allauth.account.middleware.AccountMiddleware',  #  for django-allauth
 ]
 
 ROOT_URLCONF = 'gymvaultproject.urls'

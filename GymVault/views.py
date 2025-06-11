@@ -6,6 +6,7 @@ from .models import Gym, User, GymAdmin, MembershipPlan, Member, Payment, Locker
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
+from gymvault.forms import RequestFormForm
 
 # Create your views here.
 # def home(request):
@@ -600,6 +601,19 @@ def gyms_and_plans(request):
         gym.plans = MembershipPlan.objects.filter(gym=gym)
     return render(request, 'gyms_and_plans.html', {'gyms': gyms})
 
-# def get_all_gym(request):
 
+def request_form(request):
+    if request.method == 'POST':
+        form = RequestFormForm(request.POST)
+        if form.is_valid():
+            # Process the form data
+            form.save()
+            
+            messages.success(request, 'Your request has been submitted successfully!')
+            return redirect('home')
+        
+        
+        
+    form = RequestFormForm()
+    return render(request, 'request_form.html', {'form': form})  
 

@@ -80,3 +80,19 @@ class Locker(models.Model):
 
     def __str__(self):
         return f"{self.locker_number} - {self.gym.name}"
+    
+
+class RequestForm(models.Model):
+    request_status = (
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    )
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
+    message = models.TextField()
+    status = models.CharField(max_length=20, default='pending', choices=request_status)
+
+    def __str__(self):
+        return f"{self.name} - {self.status}"

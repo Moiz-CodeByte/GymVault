@@ -13,6 +13,7 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('update-profile/', views.update_profile, name='update_profile'),
+    path('request-form/', views.request_form, name='request_form'),
     
     # Gym Admin URLs
     path('gymadmin/member/<int:member_id>/', views.member_detail, name='member_detail'),
