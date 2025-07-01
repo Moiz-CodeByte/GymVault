@@ -1,19 +1,27 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %} Select Gym & Plan | Gym Vault {% endblock title %}
+
+{% block title %}Update Plan{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex justify-center py-12">
-    <div class="max-w-screen-xl m-0 sm:m-10 bg-white shadow dark:bg-gray-800 sm:rounded-lg flex justify-center flex-1">
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex justify-center">
+    <div class="max-w-screen-xl m-0 sm:m-10 bg-white dark:bg-gray-800 shadow sm:rounded-lg flex justify-center flex-1">
+        <div class="flex-1 bg-indigo-100 dark:bg-indigo-900 text-center hidden lg:flex">
+            <div class="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
+                style="background-image: url('{% static 'images/workout.svg' %}');">
+            </div>
+        </div>
         <div class="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
             <div class="mt-12 flex flex-col items-center">
-                <h1 class="text-2xl xl:text-3xl font-extrabold">
-                    Complete Your Registration
+                <h1 class="text-2xl xl:text-3xl font-extrabold text-center">
+                    Request to Register a Gym
                 </h1>
-
+                <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+                    Please fill out the form below to request the registration of a new gym.
+                </p>
                 <div class="w-full flex-1 mt-8">
                     <div class="mx-auto max-w-xs">
-                        <form action="{% url 'complete_registration' %}" method="post" id="gymPlanForm">
+                       <form action="{% url 'update_plan' %}" method="post" id="gymPlanForm">
                             {% csrf_token %}
 
                             <!-- Gym Selection -->
@@ -41,25 +49,8 @@
                                 </select>
                             </div>
 
-                            <!-- Phone -->
-                            <div class="mb-6">
-                                <label class="block text-gray-700 text-sm font-bold mb-2 dark:text-white" for="phone">
-                                    Phone Number
-                                </label>
-                                <input type="tel" name="phone" id="phone" required
-                                    class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 placeholder-gray-500 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-gray-400 focus:bg-white dark:focus:bg-gray-800"
-                                    placeholder="{{ user.phone }}" value="{{ user.phone }}">
-                            </div>
-
-                            <!-- Address -->
-                            <div class="mb-6">
-                                <label class="block text-gray-700 text-sm font-bold mb-2 dark:text-white" for="address">
-                                    Address
-                                </label>
-                                <textarea name="address" id="address" required rows="3"
-                                    class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 placeholder-gray-500 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-gray-400 focus:bg-white dark:focus:bg-gray-800"
-                                    placeholder="{{user.address}}" value="{{ user.address }}"></textarea>
-                            </div>
+                           
+                            
 
                             <!-- Plan Summary -->
                             <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-6">
@@ -79,7 +70,7 @@
                                     <path d="M20 8v6M23 11h-6" />
                                 </svg>
                                 <span class="ml-3">
-                                    Complete Registration
+                                    Update Registration
                                 </span>
                             </button>
                         </form>
@@ -87,16 +78,8 @@
                 </div>
             </div>
         </div>
-
-        <!-- Right Side Illustration -->
-        <div class="flex-1 bg-indigo-100 dark:bg-indigo-900 text-center hidden lg:flex">
-            <div class="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
-                style="background-image: url('{% static 'images/register-2.svg' %}');">
-            </div>
-        </div>
     </div>
 </div>
-
 <script>
     const plans = [
         {% for plan in membership_plans %}

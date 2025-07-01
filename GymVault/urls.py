@@ -13,7 +13,9 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('update-profile/', views.update_profile, name='update_profile'),
+     path('gyms-and-plans/', views.gyms_and_plans, name='gyms_and_plans'),
     path('request-form/', views.request_form, name='request_form'),
+    path('update-plan/', views.update_plan, name='update_plan'),
     
     # Gym Admin URLs
     path('gymadmin/member/<int:member_id>/', views.member_detail, name='member_detail'),
@@ -31,5 +33,5 @@ urlpatterns = [
     path('gymadmin/plan/add/', views.add_membership_plan, name='add_membership_plan'),
     path('gymadmin/plan/<int:plan_id>/update/', views.update_membership_plan, name='update_membership_plan'),
     path('gymadmin/plan/<int:plan_id>/delete/', views.delete_membership_plan, name='delete_membership_plan'),
-    path('gyms-and-plans/', views.gyms_and_plans, name='gyms_and_plans'),
+   
 ]

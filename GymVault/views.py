@@ -140,6 +140,44 @@ def complete_registration(request):
             
     return redirect('select_gym_plan')
 
+def update_plan(request):
+    
+    gym = Gym.objects.all()
+    membership_plans = MembershipPlan.objects.all()
+    
+    context = {
+        'gyms': gym,
+        'membership_plans': membership_plans,
+    }
+    if request.method == 'POST':
+         # Get gym and plan
+        gym_id = request.POST.get('gym')
+        membership_plan_id = request.POST.get('membership_plan')
+        gym = Gym.objects.get(id=gym_id)
+        membership_plan = MembershipPlan.objects.get(id=membership_plan_id)
+       
+        member = Member.objects.get(user=request.user)
+
+        #update member record
+        
+        member.gym = gym
+        member.membership_plan = membership_plan
+        member.start_date = datetime.now().date()
+        member.is_active = False
+        member.save()
+
+         # Create pending payment
+        Payment.objects.create(
+                member=member,
+                amount=membership_plan.price,
+                payment_method='cash',  # Default to bank transfer
+                status='pending'
+            )
+        messages.success(request, 'Plan updated successfully! Please complete the payment to activate your membership.')
+        return redirect('dashboard')
+
+    return render(request, 'update_plan.html', context)
+
 def logout(request):
     auth_logout(request)
     return redirect('home')

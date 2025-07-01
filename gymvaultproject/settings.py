@@ -147,8 +147,7 @@ SITE_ID = 1
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': '',
-            'secret': '',  
+           
             'key': ''
         },
         'SCOPE': ['profile', 'email'],
