@@ -59,7 +59,7 @@
                             </span>
                         </button>
                         <div class="flex flex-col items-center mt-4">
-                            <a href="{% provider_login_url 'google' scope='profile email' %}" 
+                            <a href="/accounts/google/login/?process=login" 
                                 class="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 dark:bg-indigo-900 text-gray-800 dark:text-gray-200 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline">
                                 <div class="bg-white dark:bg-gray-800 p-2 rounded-full">
                                     <svg class="w-4" viewBox="0 0 533.5 544.3">
@@ -90,7 +90,7 @@
 
                         <p class="mt-6 text-xs text-gray-600 dark:text-gray-400 text-center">
                             If you are gym owner want to register gym 
-                            <a href="#" class="border-b border-gray-500 dark:border-gray-400 border-dotted">
+                            <a href="{% url 'request_form' %}" class="border-b border-gray-500 dark:border-gray-400 border-dotted">
                                 contact there
                             </a>
                             <br>
