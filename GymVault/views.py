@@ -150,31 +150,51 @@ def update_plan(request):
         'membership_plans': membership_plans,
     }
     if request.method == 'POST':
-         # Get gym and plan
-        gym_id = request.POST.get('gym')
-        membership_plan_id = request.POST.get('membership_plan')
-        gym = Gym.objects.get(id=gym_id)
-        membership_plan = MembershipPlan.objects.get(id=membership_plan_id)
-       
-        member = Member.objects.get(user=request.user)
+        try:
+            # Get gym and plan
+            gym_id = request.POST.get('gym')
+            membership_plan_id = request.POST.get('membership_plan')
+            gym = Gym.objects.get(id=gym_id)
+            membership_plan = MembershipPlan.objects.get(id=membership_plan_id)
+           
+            member = Member.objects.get(user=request.user)
 
-        #update member record
-        
-        member.gym = gym
-        member.membership_plan = membership_plan
-        member.start_date = datetime.now().date()
-        member.is_active = False
-        member.save()
+            # Check if member is changing gyms and has an assigned locker
+            if member.gym != gym:
+                # Find and unassign any locker from the previous gym
+                previous_locker = Locker.objects.filter(assigned_member=member).first()
+                if previous_locker:
+                    previous_locker.assigned_member = None
+                    previous_locker.is_available = True
+                    previous_locker.save()
+                    messages.info(request, f'Your locker {previous_locker.locker_number} from {member.gym.name} has been automatically unassigned.')
 
-         # Create pending payment
-        Payment.objects.create(
-                member=member,
-                amount=membership_plan.price,
-                payment_method='cash',  # Default to bank transfer
-                status='pending'
-            )
-        messages.success(request, 'Plan updated successfully! Please complete the payment to activate your membership.')
-        return redirect('dashboard')
+            #update member record
+            member.gym = gym
+            member.membership_plan = membership_plan
+            member.start_date = datetime.now().date()
+            member.is_active = False
+            member.save()
+
+             # Create pending payment
+            Payment.objects.create(
+                    member=member,
+                    amount=membership_plan.price,
+                    payment_method='cash',  # Default to cash
+                    status='pending'
+                )
+            messages.success(request, 'Plan updated successfully! Please complete the payment to activate your membership.')
+            return redirect('dashboard')
+            
+        except (Gym.DoesNotExist, MembershipPlan.DoesNotExist):
+            messages.error(request, 'Invalid gym or membership plan selected.')
+            return redirect('update_plan')
+        except Member.DoesNotExist:
+            messages.error(request, 'Member profile not found.')
+            return redirect('dashboard')
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+            return redirect('update_plan')
 
     return render(request, 'update_plan.html', context)
 

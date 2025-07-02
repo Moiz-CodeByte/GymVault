@@ -65,7 +65,7 @@
         <!-- Gym Membership Section -->
         <div class="md:col-span-2">
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6">
-                <h2 class="text-xl font-bold mb-4 dark:text-white">Your Gym Memberships</h2>
+                <h2 class="text-xl font-bold mb-4 dark:text-white">Your Gym Membership</h2>
                 {% if memberships %}
                     {% for membership in memberships %}
                     <div class="border border-primary-300 dark:border-primary-600 rounded-lg p-4 mb-4">
@@ -88,9 +88,21 @@
                             <div class="text-right">
                                 <p class="font-semibold dark:text-white">Rs.{{ membership.membership_plan.price }}</p>
                                 <p class="text-sm text-gray-500">{{ membership.membership_plan.duration_in_days }} days</p>
+                                <a href="{% url 'update_plan' %}" class="mt-4 inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                                    Update Membership
+                                </a>
                             </div>
                         </div>
                     </div>
+                    
+                    {% if membership.is_expired %}
+                    <div class="mt-4 flex justify-center">
+                        <a href="{% url 'select_gym_plan' %}?gym_id={{ membership.gym.id }}" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+                            Renew Membership
+                        </a>
+                    </div>
+                    {% endif %}
+                    
                     {% endfor %}
                 {% else %}
                     <p class="text-gray-600 dark:text-gray-300 dark:text-white">You don't have any active gym memberships.</p>
