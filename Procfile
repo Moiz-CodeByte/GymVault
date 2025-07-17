@@ -1,0 +1,1 @@
+web: gunicorn gymvaultproject.wsgi --log-file -
