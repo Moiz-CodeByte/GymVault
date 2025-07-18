@@ -1,1 +1,1 @@
-web: gunicorn gymvaultproject.wsgi --log-file -
+web: gunicorn gymvaultproject.wsgi --log-file - --env DJANGO_SETTINGS_MODULE=gymvaultproject.settings_production

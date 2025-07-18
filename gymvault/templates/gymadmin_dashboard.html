@@ -246,7 +246,7 @@
                     <select name="membership_plan" id="update_plan" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
                         {% for plan in membership_plans %}
-                            <option value="{{ plan.id }}">{{ plan.name }} - ${{ plan.price }}</option>
+                            <option value="{{ plan.id }}">{{ plan.name }} - Rs.{{ plan.price }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -279,7 +279,8 @@
                     <select name="membership_plan" id="renew_plan" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
                         {% for plan in membership_plans %}
-                            <option value="{{ plan.id }}">{{ plan.name }} - ${{ plan.price }}</option>
+                            <option value="{{ plan.id }}">{{ plan.name }} - Rs.
+                                {{ plan.price }}</option>
                         {% endfor %}
                     </select>
                 </div>

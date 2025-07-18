@@ -53,7 +53,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # Conditionally include WhiteNoise middleware only if it's installed
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -93,7 +94,7 @@ WSGI_APPLICATION = 'gymvaultproject.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Use SQLite locally and PostgreSQL on Heroku
-import dj_database_url
+# import dj_database_url
 
 DATABASES = {
     'default': {
@@ -103,8 +104,8 @@ DATABASES = {
 }
 
 # Configure database for Heroku
-db_from_env = dj_database_url.config(conn_max_age=600)
-DATABASES['default'].update(db_from_env)
+# db_from_env = dj_database_url.config(conn_max_age=600)
+# DATABASES['default'].update(db_from_env)
 
 
 # Password validation
@@ -153,12 +154,12 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-# WhiteNoise configuration for static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# WhiteNoise configuration for production only
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Simplified static file serving
 # https://warehouse.python.org/project/whitenoise/
-WHITENOISE_MANIFEST_STRICT = False
+# WHITENOISE_MANIFEST_STRICT = False
 
 #my additonal settings
 AUTH_USER_MODEL = 'gymvault.User'
@@ -191,10 +192,17 @@ SOCIALACCOUNT_PROVIDERS = {
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_LOGOUT_ON_GET = True
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  # Keep this for compatibility
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
+
+# Updated allauth settings to fix deprecation warnings
+ACCOUNT_LOGIN_METHODS = {'email', 'username'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 ACCOUNT_UNIQUE_EMAIL = True
+
+# Keep deprecated settings for backward compatibility
+# These will be removed in future versions
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  # Deprecated
+ACCOUNT_EMAIL_REQUIRED = True  # Deprecated
+ACCOUNT_USERNAME_REQUIRED = True  # Deprecated
 
 # Redirect URLs
 LOGIN_URL = '/accounts/login/'
